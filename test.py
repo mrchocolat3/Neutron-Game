@@ -1,53 +1,147 @@
-import math
-x = [i for i in range(25)]
+import os
+from typing import Counter, Type
 
 
-def printBoard(board):
-    k = 0
-    for i in range(len(board)):
-        if i % 5 == 0:
-            print("\n\n\t", end=" ")
-            k += 5
-            print("\t", end=" ")
-        print(f"{(board[i]):4} ", end=" ")
-    print("\n")
+class Types:
+    EMPTY = '.'
+    NEUTRON = '*'
+    PLAYER1 = 'F'
+    PLAYER2 = 'S'
+
+    def getTypeOf(grid):
+        if grid == '.':
+            return Types.EMPTY
+        if grid == '*':
+            return Types.NEUTRON
+        if grid == 'F':
+            return Types.PLAYER1
+        if grid == 'S':
+            return Types.PLAYER2
 
 
-def xy2i(x, y): return (y * 5) + x
+class Grid:
+    def __init__(self) -> None:
+        self.row = 5
+        self.col = 5
+        self.grid = [
+            ['F', 'F', 'F', 'F', 'F'],
+            ['.', '.', '.', '.', '.'],
+            ['.', '.', '', '.', '.'],
+            ['.', '.', '.', '.', '*'],
+            ['S', 'S', 'S', 'S', 'S'],
+        ]
+
+    def drawGrid(self):
+        os.system('clear')
+        for i in self.grid:
+            print(' '.join(k for k in i) + '\n')
+
+    def updateGrid(self, row, col, itemType):
+        self.grid[row][col] = itemType
+        self.drawGrid()
 
 
-printBoard(x)
+class GridManager(Grid):
+    def __init__(self) -> None:
+        super().__init__()
 
-m = 2
-n = 4
+    # Check grid types
+    def isTopGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row - 1][col]) == gridType)
 
-print(f'i = {xy2i(m, n)}')
-# top-right
-if m == 0:
-    tr = x[xy2i(m, n):: -4]
-if m <= 2 and m >= 1:
-    tr = x[xy2i(m, n): m * n: -4]
-if m == 3:
-    tr = x[xy2i(m, n): (m * n) + 1: -4]
-if m == 4:
-    tr = x[xy2i(m, n)]
+    def isTopRightGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row - 1][col + 1]) == gridType)
 
-print(f'tr: {str(tr):4}')
+    def isRightGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row][col + 1]) == gridType)
 
-# top-left
-if m == 0:
-    tl = x[xy2i(m, n)]
-if m == 1:
-    tl = x[xy2i(m, n):: -6]
-if m >= 2 and m <= 4:
-    tl = x[xy2i(m, n):: -6]
-# if m == 4:
-#     tl = x[xy2i(m, n)]
+    def isBottomRightGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row + 1][col + 1]) == gridType)
 
-print(f'tl: {str(tl):4}')
+    def isBottomGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row + 1][col]) == gridType)
 
-# top-right
-print(f'br: {str(x[xy2i(m, n): : 6]):4}')
+    def isBottomLeftGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row + 1][col - 1]) == gridType)
 
-# top-right
-print(f'bl: {str(x[xy2i(m, n): len(x) - int(m / 5): 4]):4}')
+    def isLeftGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row][col - 1]) == gridType)
+
+    def isTopLeftGridType(self, row, col, gridType):
+        return (Types.getTypeOf(self.grid[row - 1][col - 1]) == gridType)
+
+
+class MovementSystem(GridManager):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def moveUp(self, row, col, itemType):
+        self.grid[row][col] = Types.EMPTY
+
+        counter = row
+        while counter >= 0:
+            counter -= 1
+            if not self.isTopGridType(counter, col, Types.EMPTY):
+                break
+
+        self.grid[counter][col] = itemType
+        self.drawGrid()
+
+    def moveUpLeft(self, row, col, item):
+        self.grid[row][col] = Types.EMPTY
+
+        counter = col
+        while counter >= 0:
+            counter -= 1
+            if not self.isTopLeftGridType(counter, counter, Types.EMPTY):
+                break
+
+        self.grid[counter][counter] = item
+        self.drawGrid()
+
+    def moveLeft(self, row, col, item):
+        self.grid[row][col] = Types.EMPTY
+        counter = col
+        while counter >= 0:
+            counter -= 1
+            if not self.isLeftGridType(row, counter, Types.EMPTY):
+                break
+
+        self.grid[row][counter]
+        self.drawGrid()
+
+    def moveRight(self, row, col, item):
+        self.grid[row][col] = Types.EMPTY
+        counter = 0
+        while counter <= col:
+            counter += 1
+            if not self.isLeftGridType(row, counter, Types.EMPTY):
+                break
+
+        self.grid[row][counter]
+        self.drawGrid()
+
+    def moveDown(self, row, col, item):
+        # Clear old position
+        self.grid[row][col] = Types.EMPTY
+        counter = 0
+
+        while counter <= row:
+            counter += 1
+            if not self.isBottomGridType(counter, col, Types.EMPTY):
+                break
+
+        self.grid[counter][col] = item
+        self.drawGrid()
+
+
+class Item:
+    def __init__(self, type) -> None:
+        self.type = type
+
+
+gridManager = GridManager()
+gridManager.drawGrid()
+
+movementSystem = MovementSystem()
+movementSystem.moveUpLeft(3, 4, Types.NEUTRON)
