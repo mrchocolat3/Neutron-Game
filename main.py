@@ -56,6 +56,7 @@ class Space:
         self.update(self.type)
     
     def update(self, type = SpaceTypes.EMPTY):
+        global neutronPos
         if (type == SpaceTypes.NEUTRON): 
             neutronPos = (self.x, self.y)
 
@@ -67,21 +68,83 @@ class Space:
         board[i] = self.type
 
 class Move:
-    def top(neutronIndex): 
-        ox, oy = i2xy(neutronIndex)
-        if (oy > 0): ny = oy - 1 
-        else: ny = oy
-        neutronPos = (ox, ny)
-        spaceList[xy2i(neutronPos)].update(SpaceTypes.NEUTRON) # Replace new index with neutron
-        spaceList[xy2i(ox, oy)].update(SpaceTypes.EMPTY) # Replace new index with neutron
+    def top(ox, oy): 
+        global neutronPos
 
-    def bottom(neutronIndex): pass 
-    def left(neutronIndex): pass 
-    def right(neutronIndex): pass 
-    def top_left(neutronIndex): pass 
-    def top_right(neutronIndex): pass 
-    def bottom_left(neutronIndex): pass 
-    def bottom_right(neutronIndex): pass 
+        if oy > 0: oy -= 1
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox, oy+1)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+    def bottom(ox, oy): 
+        global neutronPos
+
+        if oy < 5: oy += 1
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox, oy - 1)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+    def left(ox, oy): 
+        global neutronPos
+
+        if ox > 0: ox -= 1
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox + 1, oy)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+    def right(ox, oy): 
+        global neutronPos
+
+        if ox < 5: ox += 1
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox - 1, oy)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+    def top_left(ox, oy): 
+        global neutronPos
+
+        if oy > 0 and ox > 0: 
+            oy -= 1
+            ox -= 1
+
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox + 1, oy + 1)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+    def top_right(ox, oy): 
+        global neutronPos
+
+        if oy > 0 and ox > 0: 
+            oy -= 1
+            ox += 1
+
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox - 1, oy + 1)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+    def bottom_left(ox, oy): 
+        global neutronPos
+
+        if oy > 0 and ox > 0: 
+            oy += 1
+            ox -= 1
+
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox + 1, oy - 1)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+    def bottom_right(ox, oy): 
+        global neutronPos
+
+        if oy > 0 and ox > 0: 
+            oy += 1
+            ox += 1
+
+        board[xy2i(ox, oy)] = SpaceTypes.NEUTRON
+        board[xy2i(ox - 1, oy - 1)] = SpaceTypes.EMPTY
+        neutronPos = (ox, oy)
+
+
 
 
 
@@ -115,7 +178,19 @@ def handleMovement(direction):
         return None 
     
     if direction == 0:
-        Move.top(xy2i(neutronPos))
+        Move.top(neutronPos[0], neutronPos[1])
+    
+    if direction == 2:
+        Move.right(neutronPos[0], neutronPos[1])
+    
+    if direction == 4:
+        Move.bottom(neutronPos[0], neutronPos[1])
+    
+    if direction == 6:
+        Move.left(neutronPos[0], neutronPos[1])
+
+
+    printBoard(board)
 
 
 # Gameloop
@@ -129,7 +204,7 @@ try:
         #     space.update() # Update Spaces 
         
         printBoard(board) 
-        direction = int(input("Where to move? (1-8): ")) - 1
+        direction = int(input("Where to move? 1. top, 2. top-right, 3. right, 4. down-right, 5. down, 6. down-left, 7. left, 8. top-left\nDirection: ")) - 1
 
         handleMovement(direction)
         printInfo()
