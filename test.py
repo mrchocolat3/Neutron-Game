@@ -18,7 +18,7 @@ def xy2i(x, y): return (y * 5) + x
 
 printBoard(x)
 
-m = 1
+m = 2
 n = 4
 
 print(f'i = {xy2i(m, n)}')
@@ -26,7 +26,7 @@ print(f'i = {xy2i(m, n)}')
 if m == 0:
     tr = x[xy2i(m, n):: -4]
 if m <= 2 and m >= 1:
-    tr = x[xy2i(m, n): (xy2i(m, n) % (m * 5)): -4]
+    tr = x[xy2i(m, n): m * n: -4]
 if m == 3:
     tr = x[xy2i(m, n): (m * n) + 1: -4]
 if m == 4:
