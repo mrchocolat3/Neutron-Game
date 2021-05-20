@@ -146,8 +146,6 @@ class Move:
 
 
 
-
-
 # Initiate 
 spaceList = []
 def init():
@@ -180,15 +178,27 @@ def handleMovement(direction):
     if direction == 0:
         Move.top(neutronPos[0], neutronPos[1])
     
+    if direction == 1:
+        Move.top_right(neutronPos[0], neutronPos[1])
+    
     if direction == 2:
         Move.right(neutronPos[0], neutronPos[1])
+    
+    if direction == 3:
+        Move.bottom_right(neutronPos[0], neutronPos[1])
     
     if direction == 4:
         Move.bottom(neutronPos[0], neutronPos[1])
     
+    if direction == 5:
+        Move.bottom_left(neutronPos[0], neutronPos[1])
+    
     if direction == 6:
         Move.left(neutronPos[0], neutronPos[1])
 
+    if direction == 7:
+        Move.top_left(neutronPos[0], neutronPos[1])
+    
 
     printBoard(board)
 
