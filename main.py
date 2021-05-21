@@ -21,9 +21,12 @@ class Types:
 
 class Item:
     def __init__(this) -> None:
-        this.p1Order = [0, 1, 2, 3, 4]
+        # Get Player Orders
+        this.p1Order = [(int(item) - 1) for item in input(
+            "Enter the list orders for player 1. e.g (1 2 3 4 5): ").split()]
+        this.p2Order = [(int(item) - 1) for item in input(
+            "Enter the list orders for player 2. e.g (5 4 3 2 1): ").split()]
         this.p1OrderPos = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]]
-        this.p2Order = [4, 3, 2, 1, 0]
         this.p2OrderPos = [[4, 0], [4, 1], [4, 2], [4, 3], [4, 4]]
         this.neutronPosition = [2, 2]
 
@@ -375,6 +378,7 @@ class Game_Manager:
         #     print(e)
 
 
-GM = Game_Manager()
-GM.init()
-GM.game_loop()
+if __name__ == "__main__":
+    GM = Game_Manager()
+    GM.init()
+    GM.game_loop()
