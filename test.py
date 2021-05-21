@@ -25,7 +25,7 @@ class Item:
         this.p1OrderPos = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]]
         this.p2Order = [4, 3, 2, 1, 0]
         this.p2OrderPos = [[4, 0], [4, 1], [4, 2], [4, 3], [4, 4]]
-        this.neutronPosition = [2, 4]
+        this.neutronPosition = [2, 2]
 
     def get_position_of(this, item: str):
         if item == Types.NEUTRON:
@@ -59,17 +59,11 @@ class Grid:
         this.grid = [
             ['F1', 'F2', 'F3', 'F4', 'F5'],
             ['.', '.', '.', '.', '.'],
-            ['F1', '.', '.', '.', '*'],
+            ['.', '.', '*', '.', '.'],
             ['.', '.', '.', '.', '.'],
             ['S1', 'S2', 'S3', 'S4', 'S5'],
         ]
-        this.grid1 = [
-            ['0',     '1',     '2',     '3',     '4'],
-            ['5',     '6',     '7',   '8',     '9'],
-            ['10',   '11',   '12',   '13',   '14'],
-            ['15',   '16',   '17',   '18',   '19'],
-            ['20',   '21',   '22',   '23',   '24'],
-        ]
+        
         this.item = item
         this.drawGrid()
 
@@ -84,10 +78,10 @@ class Grid:
         this.item.set_position_of(itemType, position, order)
         this.grid[position[0]][position[1]
                                ] = f'{itemType}{f"{order + 1}" if (itemType != Types.EMPTY and itemType != Types.NEUTRON) else ""}'
+
         this.drawGrid()
 
     # Check grid types
-
     def isTopGridType(this, row, col, gridType):
         r = row - 1 if (row - 1) >= 0 else row
         return (Types.getTypeOf(this.grid[r][col]) == gridType)
@@ -140,6 +134,8 @@ class Grid:
             counter -= 1
 
         this.updateGrid([counter, col], item, order)
+
+        # Check If Postion row is 0 and if so then changed by whom.
 
     def moveUpLeft(this, position, item, order=None):
         this.updateGrid(position, Types.EMPTY)
@@ -281,7 +277,7 @@ class Grid:
 
 class Game_Manager:
     def __init__(this) -> None:
-        this.game_is_running = None
+        this.gameOver = None
         this.turn = None
         this.grid = None
         this.item = None
@@ -292,7 +288,7 @@ class Game_Manager:
 
     def init(this) -> None:
         ''' Initiate Game Manager '''
-        this.game_is_running = True
+        this.gameOver = False
         this.turn = 0
         this.item = Item()  # initiate Item
         this.grid = Grid(this.item)  # initiate Grid
@@ -338,11 +334,34 @@ class Game_Manager:
         elif direction == 8:
             this.grid.moveUpLeft(position, item, order)
 
+    def isGameOver(this, position):
+        if this.turn < 2 and position[0] == 0:
+            return True
+        elif this.turn > 1 and position[0] == (this.grid.row - 1):
+            return True
+        else:
+            return False
+
+    def overTheGame(this):
+        os.system('clear')
+        if this.turn < 2:
+            print("Player 1 Won!")
+        if this.turn > 1:
+            print("Player 2 Won!")
+
+        this.gameOver = True
+
     def game_loop(this):
         # try:
-        while this.game_is_running:
+        while not this.gameOver:
+            # Check if Game is over
+            if this.isGameOver(this.getItemPosition(this.neutron)[0]):
+                this.overTheGame()
+                break
+
             if this.turn <= 1:
-                d = int(input('player 1 direction: (1 - 8): '))
+                d = int(
+                    input(f'player 1 direction: (1 - 8): '))
                 this.handleMovement(d)
                 this.turn += 1
             else:
