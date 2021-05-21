@@ -109,7 +109,15 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
 
 # Spyder project settings
 .spyderproject
